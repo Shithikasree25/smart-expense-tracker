@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Smart Expense Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Using Google Material Icons for buttons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar with Big Icon Buttons -->
+        <div class="sidebar">
+            <button onclick="showForm('add')" title="Add Expense">
+                <span class="material-icons">add_circle</span>
+                Add Expense
+            </button>
+            <button onclick="fetchExpenses()" title="All Expenses">
+                <span class="material-icons">list_alt</span>
+                All Expenses
+            </button>
+            <button onclick="fetchTotal()" title="Total Expense">
+                <span class="material-icons">account_balance_wallet</span>
+                Total Expense
+            </button>
+            <button onclick="aiTips()" title="AI Tips">
+                <span class="material-icons">lightbulb</span>
+                AI Tips
+            </button>
+            <button onclick="chatBox()" title="Chat">
+                <span class="material-icons">chat</span>
+                Chat
+            </button>
+            <button onclick="window.location.href='/logout'" title="Logout">
+                <span class="material-icons">logout</span>
+                Logout
+            </button>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <h1>Welcome, {{ username }}</h1>
+
+            <!-- Dynamic Form Area -->
+            <div id="dynamic-form"></div>
+
+            <!-- Expense List -->
+            <div id="expense-list"></div>
+
+            <!-- Chat Box -->
+            <div id="chat-box" style="display:none;">
+                <h3>Expense Chat</h3>
+                <div id="chat-messages"></div>
+                <input type="text" id="chat-input" placeholder="Ask me about your expenses...">
+                <button onclick="sendChat()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

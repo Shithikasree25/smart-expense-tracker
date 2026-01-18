@@ -1,0 +1,8 @@
+POST http://127.0.0.1:5000/addExpense
+Content-Type: application/json
+
+{
+  "amount": 500,
+  "category": "Food",
+  "date": "2026-01-16"
+}
