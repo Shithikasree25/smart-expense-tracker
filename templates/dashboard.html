@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Smart Expense Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        #chat-messages, #ai-output {
+            background: #f4f4f4;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            min-height: 50px;
+        }
+        input, select, button {
+            margin: 5px 0;
+            padding: 8px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <button onclick="showAddForm()">
+            <span class="material-icons">add_circle</span>
+            Add Expense
+        </button>
+
+        <button onclick="fetchExpenses()">
+            <span class="material-icons">list_alt</span>
+            All Expenses
+        </button>
+
+        <button onclick="fetchTotal()">
+            <span class="material-icons">account_balance_wallet</span>
+            Total Expense
+        </button>
+
+        <button onclick="getAITips()">
+            <span class="material-icons">lightbulb</span>
+            AI Tips
+        </button>
+
+        <button onclick="toggleChat()">
+            <span class="material-icons">chat</span>
+            Chat
+        </button>
+
+        <button onclick="window.location.href='/logout'">
+            <span class="material-icons">logout</span>
+            Logout
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Welcome, {{ username }}</h1>
+
+        <!-- Dynamic Area -->
+        <div id="dynamic-form"></div>
+
+        <!-- Expense Output -->
+        <div id="expense-list"></div>
+
+        <!-- AI Tips Output -->
+        <div id="ai-output"></div>
+
+        <!-- Chat Box -->
+        <div id="chat-box" style="display:none;">
+            <h3>🤖 Expense Assistant</h3>
+            <div id="chat-messages"></div>
+            <input type="text" id="chat-input" placeholder="Ask about expenses...">
+            <button onclick="sendChat()">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ---------- Add Expense Form ---------- */
+function showAddForm() {
+    document.getElementById("dynamic-form").innerHTML = `
+        <h3>Add Expense</h3>
+        <input type="number" id="amount" placeholder="Amount">
+        <input type="text" id="category" placeholder="Category (food, rent...)">
+        <button onclick="addExpense()">Save</button>
+    `;
+}
+
+/* ---------- Add Expense ---------- */
+function addExpense() {
+    const amount = document.getElementById("amount").value;
+    const category = document.getElementById("category").value;
+
+    fetch("/add_expense", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `amount=${amount}&category=${category}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+    });
+}
+
+/* ---------- Fetch Expenses ---------- */
+function fetchExpenses() {
+    fetch("/get_expenses")
+    .then(res => res.json())
+    .then(data => {
+        let html = "<h3>All Expenses</h3><ul>";
+        data.forEach(e => {
+            html += `<li>${e.category} - ₹${e.amount} (${e.date})</li>`;
+        });
+        html += "</ul>";
+        document.getElementById("expense-list").innerHTML = html;
+    });
+}
+
+/* ---------- Fetch Total ---------- */
+function fetchTotal() {
+    fetch("/get_total")
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("expense-list").innerHTML =
+            `<h3>Total Expense: ₹${data.total}</h3>`;
+    });
+}
+
+/* ---------- AI Tips ---------- */
+function getAITips() {
+    fetch("/ai_tips")
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("ai-output").innerHTML =
+            `<h3>💡 AI Tip</h3><p>${data.tip}</p>`;
+    });
+}
+
+/* ---------- Chat ---------- */
+function toggleChat() {
+    const box = document.getElementById("chat-box");
+    box.style.display = box.style.display === "none" ? "block" : "none";
+}
+
+function sendChat() {
+    const msg = document.getElementById("chat-input").value;
+
+    fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("chat-messages").innerHTML +=
+            `<p><b>You:</b> ${msg}</p>
+             <p><b>AI:</b> ${data.response}</p>`;
+        document.getElementById("chat-input").value = "";
+    });
+}
+</script>
+
+</body>
+</html>
