@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Smart Expense Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>Welcome, {{ username }}</h1>
+
+<hr>
+
+<!-- ================= AI TIPS ================= -->
+<h2>🤖 Smart AI Tips</h2>
+<button onclick="getAITip()">Get AI Tip</button>
+<p id="ai-tip" style="font-weight: bold;"></p>
+
+<hr>
+
+<!-- ================= AI CHAT ================= -->
+<h2>💬 AI Expense Assistant</h2>
+
+<input type="text" id="chat-input" placeholder="Ask about expenses..." />
+<button onclick="sendMessage()">Send</button>
+
+<p id="chat-response" style="font-weight: bold;"></p>
+
+<hr>
+
+<!-- ================= EXPENSE FORM ================= -->
+<h2>Add Expense</h2>
+<form method="POST" action="/add_expense">
+    <input name="amount" placeholder="Amount" required>
+    <input name="category" placeholder="Category" required>
+    <button type="submit">Add</button>
+</form>
+
+<script>
+/* ---------- AI TIPS ---------- */
+function getAITip() {
+    fetch("/ai_tips")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("ai-tip").innerText = data.tip;
+        });
+}
+
+/* ---------- AI CHAT ---------- */
+function sendMessage() {
+    const message = document.getElementById("chat-input").value;
+
+    fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: message })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("chat-response").innerText = data.response;
+    });
+}
+</script>
+
+</body>
+</html>
